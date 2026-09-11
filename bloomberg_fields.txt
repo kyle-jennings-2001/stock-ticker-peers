@@ -1,0 +1,36 @@
+fields = [
+    "SALES_REV_TURN",          # Total Revenue
+    "IS_COMP_SALES",
+    "IS_COGS_TO_FE_AND_PP_AND_G",
+    "GROSS_PROFIT",              # Gross Profit
+    "IS_OPER_INC",               # Operating Income (EBIT)
+    "NET_INCOME",                # Net Income
+    "BS_TOT_ASSET",              # Total Assets
+    "BS_TOT_LIAB",               # Total Liabilities
+    "TOTAL_EQUITY",              # Total Equity
+    "CF_CASH_FROM_OPER",         # Cash from Operating Activities
+    "CF_CASH_FROM_INV_ACT",      # Cash from Investing Activities
+    "CF_CASH_FROM_FIN_ACT",      # Cash from Financing Activities
+]
+
+# rename date to fiscalDateEnding
+
+fields = [
+    "ID_ISIN",
+    "ID_EXCH_SYMBOL",
+    "CENTRAL__INDEX_KEY_NUMBER",
+    
+
+    "SALES_REV_TURN",          # Total Revenue
+    "IS_COMP_SALES",
+    "IS_COGS_TO_FE_AND_PP_AND_G",
+    "GROSS_PROFIT",              # Gross Profit
+    "IS_OPER_INC",               # Operating Income (EBIT)
+    "NET_INCOME",                # Net Income
+    "BS_TOT_ASSET",              # Total Assets
+    "BS_TOT_LIAB",               # Total Liabilities
+    "TOTAL_EQUITY",              # Total Equity
+    "CF_CASH_FROM_OPER",         # Cash from Operating Activities
+    "CF_CASH_FROM_INV_ACT",      # Cash from Investing Activities
+    "CF_CASH_FROM_FIN_ACT",      # Cash from Financing Activities
+]

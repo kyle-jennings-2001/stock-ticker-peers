@@ -1,0 +1,101 @@
+# =============================================================================
+# FMP (Financial Modeling Prep) income-statement fields  ->  Bloomberg Desktop
+# API (BLPAPI / //blp/refdata) field mnemonics.
+#
+# HOW TO USE
+# ----------
+# Bloomberg fundamentals are pulled with reference/historical requests:
+#   - Point-in-time / latest:  BDP(security, field)          (xbbg: blp.bdp)
+#   - Time series by period:   BDH(security, field, ...)     (xbbg: blp.bdh)
+# For statement data set the periodicity/period overrides, e.g.:
+#   FUNDAMENTAL_PUBLIC_DATE, EQY_FUND_YEAR, EQY_FUND_RELATIVE_PERIOD,
+#   FUND_PER ('A' annual / 'Q' quarterly), FILING_STATUS ('OR','MR','PR').
+#
+# IMPORTANT CAVEAT
+# ----------------
+# Bloomberg mnemonics change over time and some do not map 1:1 to FMP's
+# taxonomy. Every mapping below should be confirmed in the terminal via
+# FLDS<GO> (field search) against the actual security before relying on it.
+# Entries marked  # VERIFY  are best-guess / no clean equivalent.
+# Entries marked  # NO DIRECT EQUIVALENT  are not standard Bloomberg fields
+# and typically must be derived from other fields.
+# =============================================================================
+
+
+
+
+#DVD_HIST --Dividend History
+
+
+
+
+
+fmp_to_bloomberg = {
+
+    # ---- Identifiers & metadata -------------------------------------------
+    "isin":                                    "ID_ISIN",
+    "symbol":                                  "TICKER",                         # or PARSEKYABLE_DES / ID_BB_SEC_NUM_DES; ID_EXCH_SYMBOL
+    "cik":                                     "CENTRAL__INDEX_KEY_NUMBER",                    
+    "reportedCurrency":                        "EQY_FUND_CRNCY",                 # fundamentals reporting currency
+    "fillingDate":                             "FUNDAMENTAL_PUBLIC_DATE",        # date financials were filed/published  # VERIFY
+    "acceptedDate":                            "LATEST_ANNOUNCEMENT_DT",         # closest: announcement/accepted date   # VERIFY
+    "fiscalYear":                              "EQY_FUND_YEAR",                  # FISCAL__YEAR_PERIOD
+    "period":                                  "FUND_PER",                       # 'A' annual / 'Q' quarter (override)   # VERIFY
+
+    # ---- Revenue & cost ---------------------------------------------------
+    "revenue":                                 "SALES_REV_TURN",                 # IS_COMP_SALES
+    "costOfRevenue":                           "IS_COG_AND_SERVICES_SOLD",       # Cost of Goods & Services Sold
+    "grossProfit":                             "GROSS_PROFIT",
+
+    # ---- Operating expenses ----------------------------------------------
+    "researchAndDevelopmentExpenses":          "IS_RD_EXPEND",                                          # VERIFY
+    "generalAndAdministrativeExpenses":        "IS_GENERAL_AND_ADMIN_EXP",                              # VERIFY
+    "sellingAndMarketingExpenses":             "IS_SELLING_AND_MARKETING_EXP",                          # VERIFY
+    "sellingGeneralAndAdministrativeExpenses": "IS_SGA_EXPENSE",                                        # VERIFY
+    "otherExpenses":                           "IS_OTHER_OPER_INC",              # sign/scope varies     # VERIFY
+    "operatingExpenses":                       "IS_OPERATING_EXPN",
+    "costAndExpenses":                         "IS_TOT_OPER_COST_AND_EXP",       # total cost & expenses # VERIFY
+
+    # ---- Interest ---------------------------------------------------------
+    "netInterestIncome":                       "NET_INT_INC",                    # mainly banks          # VERIFY
+    "interestIncome":                          "IS_INT_INC",                                            # VERIFY
+    "interestExpense":                         "IS_INT_EXPENSE",
+
+    # ---- D&A, EBITDA, EBIT ------------------------------------------------
+    "depreciationAndAmortization":             "CF_DEPR_AMORT",                  # or ARDR_DEPRECIATION_AMORTIZATION
+    "ebitda":                                  "EBITDA",
+    "ebit":                                    "EBIT",
+
+    # ---- Non-operating & operating income --------------------------------
+    "nonOperatingIncomeExcludingInterest":     None,                            # NO DIRECT EQUIVALENT (derive)
+    "operatingIncome":                         "IS_OPER_INC",
+    "totalOtherIncomeExpensesNet":             "IS_TOT_NON_OPER_INC_LOSS",      #                        # VERIFY
+
+    # ---- Pre-tax, tax, net income ----------------------------------------
+    "incomeBeforeTax":                         "PRETAX_INC",
+    "incomeTaxExpense":                        "IS_INC_TAX_EXP",
+    "netIncomeFromContinuingOperations":       "IS_INC_BEF_XO_ITEM",            #                        # VERIFY
+    "netIncomeFromDiscontinuedOperations":     "IS_NET_INC_DISCONT_OPER",       #                        # VERIFY
+    "otherAdjustmentsToNetIncome":             None,                            # NO DIRECT EQUIVALENT (derive)
+    "netIncome":                               "NET_INCOME",
+    "netIncomeDeductions":                     None,                            # NO DIRECT EQUIVALENT (e.g. pfd divs: BS_PFD_DVD)
+    "bottomLineNetIncome":                     "IS_NET_INCOME_TO_COMMON",       # net income to common  # VERIFY
+
+    # ---- Per-share & share counts ----------------------------------------
+    "eps":                                     "IS_EPS",                        # basic reported EPS
+    "epsDiluted":                              "IS_DILUTED_EPS",
+    "weightedAverageShsOut":                   "IS_AVG_NUM_SH_FOR_EPS",         # basic wtd avg shares
+    "weightedAverageShsOutDil":               "IS_SH_FOR_DILUTED_EPS",         # diluted wtd avg shares
+}
+
+# ---------------------------------------------------------------------------
+# Fields with NO clean Bloomberg equivalent (compute from the mnemonics above):
+#   nonOperatingIncomeExcludingInterest = totalOtherIncomeExpensesNet
+#                                         - (interestIncome - interestExpense)
+#   otherAdjustmentsToNetIncome         = netIncome
+#                                         - netIncomeFromContinuingOperations
+#                                         - netIncomeFromDiscontinuedOperations
+#   netIncomeDeductions                 = preferred dividends / minority int.
+#                                         (see BS_PFD_DVD, MINORITY_INTEREST)
+#   bottomLineNetIncome                 = net income attributable to common
+# ---------------------------------------------------------------------------
